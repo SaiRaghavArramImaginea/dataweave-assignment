@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="employeedata" format="xml">
+      <types:example format="xml" element="employees" location="examples/Employees-Input.xml"/>
+    </types:type>
+    <types:type name="employeeoutput" format="json">
+      <types:shape format="weave" example="examples/Employees-output.json"><![CDATA[%dw 2.0
+
+type employeeoutput = Array<{|  ID: String,   Name: String,   Designation: String,   Department: String|}> {"example": "[{\\\"ID\\\":\\\"111\\\",\\\"Name\\\":\\\"Sachin Tendulkar\\\",\\\"Designation\\\":\\\"Player\\\",\\\"Department\\\":\\\"Cricket\\\"},{\\\"ID\\\":\\\"222\\\",\\\"Name\\\":\\\"Rahul Dravid\\\",\\\"Designation\\\":\\\"Player\\\",\\\"Department\\\":\\\"Cricket\\\"},{\\\"ID\\\":\\\"333\\\",\\\"Name\\\":\\\"Viswanathan Anand\\\",\\\"Designation\\\":\\\"Player\\\",\\\"Department\\\":\\\"Chess\\\"},{\\\"ID\\\":\\\"888\\\",\\\"Name\\\":\\\"Magnus Carlsen\\\",\\\"Designation\\\":\\\"Player\\\",\\\"Department\\\":\\\"Chess\\\"},{\\\"ID\\\":\\\"444\\\",\\\"Name\\\":\\\"Elon Musk\\\",\\\"Designation\\\":\\\"CEO\\\",\\\"Department\\\":\\\"Manufacturing\\\"},{\\\"ID\\\":\\\"555\\\",\\\"Name\\\":\\\"Satya Nadella\\\",\\\"Designation\\\":\\\"CEO\\\",\\\"Department\\\":\\\"Software\\\"},{\\\"ID\\\":\\\"666\\\",\\\"Name\\\":\\\"Sundar Pichai\\\",\\\"Designation\\\":\\\"CEO\\\",\\\"Department\\\":\\\"Software\\\"},{\\\"ID\\\":\\\"777\\\",\\\"Name\\\":\\\"Marissa Mayer\\\",\\\"Designation\\\":\\\"CEO\\\",\\\"Department\\\":\\\"Software\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#4c5adf08-4eab-429b-a835-c5811f20edce">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="employeedata"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

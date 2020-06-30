@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="da32441e-a391-4845-8078-98d9b6c3032b" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="dataweave-assignmentFlow" doc:id="d780c0ca-f2a3-455a-b1d8-8c17e28883a5" >
+		<http:listener doc:name="Listener" doc:id="fcddf25e-325d-426f-b4cf-f61fc41fdebb" config-ref="HTTP_Listener_config" path="/employees"/>
+		<ee:transform doc:name="Transform Message" doc:id="4c5adf08-4eab-429b-a835-c5811f20edce">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var employees = payload.employees.*department.employees.*employee
+var deptvsemployees = flatten((payload.employees.*department map(data, index) -> {
+	employees: data.employees.*employee map (data1, index) -> {
+		deptname : data.name,
+		firstName : data1.firstname,
+		lastName : data1.lastname,
+		designation: data1.designation
+	}	
+}).employees)
+---
+flatten((payload.employees.*department map(data, index) -> {
+	employees: data.employees.*employee map (data1, index) -> {
+		Id : data1.@id,
+		Name : data1.firstname ++ " " ++ data1.lastname,
+		DepartmentName : data.name,
+		Designation: data1.designation
+	}	
+}).employees)
+
+/*employees map (data, index) -> {
+	ID: data.@id,
+	FirstName : data.firstname,
+	LastName : data.lastname,
+	Designation: data.designation
+} */
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
